@@ -1,0 +1,7 @@
+#!/bin/bash
+
+#This program will get the list of currently running user programs, determine what package they originate from and add to two lists. One for things that need to be installed and can be directly from apt and the other which is manual programs. 
+
+#The command to get running programs is ps -U ethohampton -u ethohampton -H
+#apt search will do the searching
+

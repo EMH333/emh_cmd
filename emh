@@ -1,0 +1,24 @@
+#!/bin/bash
+
+echo "Ethan Hampton's command line tool!"
+
+order=$1
+
+if [[ $order = 'update' ]] 
+then
+	echo "Updating System, please enter sudo password:"
+	sudo apt update
+	sudo apt upgrade
+fi
+
+if [[ $order = 'run' ]]
+then
+	echo "Running config"
+	python3  `dirname "$(readlink -f "$0")"`/runProject.py ${@:2}
+fi
+
+if [[ $order = 'crawl' ]]
+then
+	echo "Crawling Website"
+	`dirname "$(readlink -f "$0")"`/webCrawl.sh ${@:2} #crawls website with input of 'emh crawl {URL} {Directory to store data}'
+fi
