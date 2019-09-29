@@ -22,3 +22,10 @@ then
 	echo "Crawling Website"
 	`dirname "$(readlink -f "$0")"`/webCrawl.sh ${@:2} #crawls website with input of 'emh crawl {URL} {Directory to store data}'
 fi
+
+if [[ $order = 'bright' ]]
+then
+	echo "Changing Brightness"
+	xrandr --output eDP-1 --brightness ${@:2}
+fi
+
