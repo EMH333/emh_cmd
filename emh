@@ -1,8 +1,13 @@
 #!/bin/bash
 
-echo "Ethan Hampton's command line tool!"
-
 order=$1
+
+if [[ $order = 'start' ]] 
+then
+	echo "Optimizing system:"
+	sudo `dirname "$(readlink -f "$0")"`/Startup/enableKeyboardAndMouse.perl
+	emh bright 0.3
+fi
 
 if [[ $order = 'update' ]] 
 then
