@@ -26,6 +26,26 @@ fi
 if [[ $order = 'bright' ]]
 then
 	echo "Changing Brightness"
-	xrandr --output eDP-1 --brightness ${@:2}
+	xrandr --output eDP-1 --brightness ${@:2} #TODO grab laptop screen name regardless of nvidia or intel graphics
+fi
+
+if [[ $order = 'mount' ]]
+then
+	mkdir -p ~/OSUengr
+	sshfs hamptone@access.engr.oregonstate.edu:/nfs/stak/users/hamptone ~/OSUengr
+fi
+
+if [[ $order = 'unmount' ]]
+then
+	fusermount -u ~/OSUengr
+	rmdir ~/OSUengr
+fi
+
+if [[ $order = 'connect' ]]
+then
+	if [[ $2 = 'osu' ]]
+	then
+		ssh hamptone@access.engr.oregonstate.edu
+	fi
 fi
 
