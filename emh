@@ -13,7 +13,10 @@ if [[ $order = 'update' ]]
 then
 	echo "Updating System, please enter sudo password:"
 	sudo apt update
-	sudo apt upgrade
+	if [ $(apt-get -s upgrade | awk '/^Inst/ { print $2 }' | wc -l) -gt 0 ]
+	then
+		sudo apt upgrade
+	fi
 fi
 
 if [[ $order = 'run' ]]
