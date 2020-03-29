@@ -1,11 +1,12 @@
 #!/bin/bash
 
 order=$1
+emhDir=`dirname "$(readlink -f "$0")"`
 
 if [[ $order = 'start' ]] 
 then
 	echo "Optimizing system:"
-	sudo `dirname "$(readlink -f "$0")"`/Startup/enableKeyboardAndMouse.perl
+	sudo $emhDir/Startup/enableKeyboardAndMouse.perl
 	emh bright 0.3
 fi
 
@@ -22,13 +23,13 @@ fi
 if [[ $order = 'run' ]]
 then
 	echo "Running config"
-	python3  `dirname "$(readlink -f "$0")"`/runProject.py ${@:2}
+	python3  $emhDir/runProject.py ${@:2}
 fi
 
 if [[ $order = 'crawl' ]]
 then
 	echo "Crawling Website"
-	`dirname "$(readlink -f "$0")"`/webCrawl.sh ${@:2} #crawls website with input of 'emh crawl {URL} {Directory to store data}'
+	$emhDir/webCrawl.sh ${@:2} #crawls website with input of 'emh crawl {URL} {Directory to store data}'
 fi
 
 if [[ $order = 'bright' ]]
@@ -51,9 +52,13 @@ fi
 
 if [[ $order = 'connect' ]]
 then
-	if [[ $2 = 'osu' ]]
+	#TODO move get config to function
+	location=`python3  $emhDir/getConfig.py "connect.$2"`
+	if [ $? -eq 0 ]
 	then
-		ssh hamptone@access.engr.oregonstate.edu
+		ssh $location
+	else
+		echo "Couldn't find a config location for that server ($2)"
 	fi
 fi
 
