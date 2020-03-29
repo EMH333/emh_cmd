@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import os, sys, json, subprocess, signal
 
 types = dict(python="python3 $file",
