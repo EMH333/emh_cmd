@@ -16,13 +16,19 @@ def load_home_commands():
     programs_loaded = 0
     try:
         with open(home) as f:
-            prgms = json.load(f)
+            prgms = json.load(f)["commands"]
             for command in prgms:  # loop through all programs in home commands
-                if isinstance(command["name"], list):  # if name is an array, add all aliases to commands
-                    for name in command["name"]:
-                        types[name] = command["command"]
+                if "names" in prgms[command] and isinstance(prgms[command]["names"], list):  # if name is an array, add all aliases to commands
+                    for name in prgms[command]["names"]:
+                        types[name] = prgms[command]["command"]
                 else:
-                    types[command["name"]] = command["command"]
+                    if "name" in prgms[command]: #if program wants to go by different name then definition
+                        types[prgms[command]["name"]] = prgms[command]["command"]
+                    else: #just grab name of command
+                        if "command" in prgms[command]: #grab from command val if defined, else just value of the name val
+                            types[command] = prgms[command]["command"]
+                        else:
+                            types[command] = prgms[command]
                 programs_loaded += 1
     except json.decoder.JSONDecodeError:
         print("There was an error decoding the JSON file")
