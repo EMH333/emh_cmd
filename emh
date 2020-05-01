@@ -7,7 +7,7 @@ if [[ $order = 'start' ]]
 then
 	echo "Optimizing system:"
 	sudo $emhDir/Startup/enableKeyboardAndMouse.perl
-	emh bright 0.3
+	emh bright
 fi
 
 if [[ $order = 'update' ]] 
@@ -34,8 +34,15 @@ fi
 
 if [[ $order = 'bright' ]]
 then
+	defaultBrightness=`python3  $emhDir/getConfig.py "defaultBrightness" 0.3`
+
 	echo "Changing Brightness"
-	xrandr --output eDP-1 --brightness ${@:2} #TODO grab laptop screen name regardless of nvidia or intel graphics
+	if [ $# -gt 1 ]
+	then
+		xrandr --output eDP-1 --brightness ${@:2} #TODO grab laptop screen name regardless of nvidia or intel graphics
+	else
+		xrandr --output eDP-1 --brightness $defaultBrightness
+	fi
 fi
 
 if [[ $order = 'mount' ]]

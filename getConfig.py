@@ -30,7 +30,11 @@ for x in valToGet:
     try:
         currentConfig = currentConfig[x]
     except KeyError:
-        print("Setting %s not found" % x)
-        sys.exit(1)
+        if len(sys.argv) > 2:
+            currentConfig = sys.argv[2]
+        else:
+            print("Setting %s not found" % x)
+            sys.exit(1)
+
 
 print(currentConfig)
