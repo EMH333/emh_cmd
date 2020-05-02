@@ -69,3 +69,11 @@ then
 	fi
 fi
 
+
+#aliases should always be last in this file
+#TODO only run if another command didn't already
+alias=`python3  $emhDir/getConfig.py "aliases.$order"`
+if [ $? -eq 0 ]
+then
+	emh $alias
+fi
