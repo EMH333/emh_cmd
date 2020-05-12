@@ -8,7 +8,6 @@ then
 	echo "Optimizing system:"
 	sudo $emhDir/Startup/enableKeyboardAndMouse.perl
 	emh bright
-	echo deep | sudo tee /sys/power/mem_sleep #enable deep suspend for power saving
 fi
 
 if [[ $order = 'update' ]] 
@@ -68,12 +67,6 @@ then
 	else
 		echo "Couldn't find a config location for that server ($2)"
 	fi
-fi
-
-if [[ $order = 'backup' ]]
-then
-	command=`python3  $emhDir/getConfig.py "backup.command"`
-	$command
 fi
 
 
