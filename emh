@@ -8,6 +8,7 @@ then
 	echo "Optimizing system:"
 	sudo $emhDir/Startup/enableKeyboardAndMouse.perl
 	emh bright
+	echo deep | sudo tee /sys/power/mem_sleep #enable deep sleep for suspend
 fi
 
 if [[ $order = 'update' ]] 
