@@ -64,10 +64,24 @@ then
 	location=`python3  $emhDir/getConfig.py "connect.$2"`
 	if [ $? -eq 0 ]
 	then
-		ssh $location
+		ssh $location ${@:3}
 	else
 		echo "Couldn't find a config location for that server ($2)"
 	fi
+fi
+
+if [[ $order = 'work' ]]
+then
+	slack -s & disown
+	xdg-open https://osu.workforcehosting.com/workforce/WebClock.do
+	#hexchat & disown
+fi
+
+if [[ $order = 'unwork' ]]
+then
+	xdg-open https://osu.workforcehosting.com/workforce/WebClock.do
+	pkill slack --signal SIGTERM
+	#pkill hexchat --signal SIGTERM
 fi
 
 
@@ -76,5 +90,5 @@ fi
 alias=`python3  $emhDir/getConfig.py "aliases.$order"`
 if [ $? -eq 0 ]
 then
-	emh $alias
+	emh $alias ${@:2}
 fi
