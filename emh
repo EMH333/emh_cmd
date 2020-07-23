@@ -6,7 +6,7 @@ emhDir=`dirname "$(readlink -f "$0")"`
 if [[ $order = 'start' ]] 
 then
 	echo "Optimizing system:"
-	sudo $emhDir/Startup/enableKeyboardAndMouse.perl
+	sudo $emhDir/Tools/enableKeyboardAndMouse.perl
 	emh bright
 	echo deep | sudo tee /sys/power/mem_sleep #enable deep sleep for suspend
 fi
@@ -24,18 +24,18 @@ fi
 if [[ $order = 'run' ]]
 then
 	echo "Running config"
-	python3  $emhDir/runProject.py ${@:2}
+	python3  $emhDir/Tools/runProject.py ${@:2}
 fi
 
 if [[ $order = 'crawl' ]]
 then
 	echo "Crawling Website"
-	$emhDir/webCrawl.sh ${@:2} #crawls website with input of 'emh crawl {URL} {Directory to store data}'
+	$emhDir/Tools/webCrawl.sh ${@:2} #crawls website with input of 'emh crawl {URL} {Directory to store data}'
 fi
 
 if [[ $order = 'bright' ]]
 then
-	defaultBrightness=`python3  $emhDir/getConfig.py "defaultBrightness" 0.3`
+	defaultBrightness=`python3  $emhDir/Tools/getConfig.py "defaultBrightness" 0.3`
 
 	echo "Changing Brightness"
 	if [ $# -gt 1 ]
@@ -61,7 +61,7 @@ fi
 if [[ $order = 'connect' ]]
 then
 	#TODO move get config to function
-	location=`python3  $emhDir/getConfig.py "connect.$2"`
+	location=`python3  $emhDir/Tools/getConfig.py "connect.$2"`
 	if [ $? -eq 0 ]
 	then
 		ssh $location ${@:3}
@@ -87,7 +87,7 @@ fi
 
 #aliases should always be last in this file
 #TODO only run if another command didn't already
-alias=`python3  $emhDir/getConfig.py "aliases.$order"`
+alias=`python3  $emhDir/Tools/getConfig.py "aliases.$order"`
 if [ $? -eq 0 ]
 then
 	emh $alias ${@:2}
