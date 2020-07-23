@@ -22,19 +22,31 @@ def load_configs():
     except json.decoder.JSONDecodeError:
         print("There was an error decoding the JSON file")
 
+# use this from other python programs
+def get_value(value, default=""):
+    valToGet = value.split('.')
+    currentConfig = configVals
+    for x in valToGet:
+        try:
+            currentConfig = currentConfig[x]
+        except KeyError:
+            return default
+    return currentConfig
 
-load_configs()
-valToGet = sys.argv[1].split('.')
-currentConfig = configVals
-for x in valToGet:
-    try:
-        currentConfig = currentConfig[x]
-    except KeyError:
-        if len(sys.argv) > 2:
-            currentConfig = sys.argv[2]
-        else:
-            print("Setting %s not found" % x)
-            sys.exit(1)
+# only run if run on command line
+if __name__ == "__main__":
+    if len(sys.argv) == 1: # make sure there is a config val to get
+        print("Need more arguments")
+        sys.exit(1)
 
+    load_configs()
+    default = ""
+    if len(sys.argv) > 2: # set the default if there is one
+        default = sys.argv[2]
+    val = get_value(sys.argv[1], default)
 
-print(currentConfig)
+    if val == "": #error if a value isn't found
+        print("Setting " + sys.argv[1].split('.')[-1] + " not found")
+        sys.exit(1)
+    else:
+        print(val)
