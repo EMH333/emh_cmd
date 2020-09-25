@@ -46,6 +46,12 @@ then
 	fi
 fi
 
+if [[ $order = 'gb' ]]
+then
+	echo "Changing Brightness"
+	xrandr --output eDP-1-1 --brightness 0.3
+fi
+
 if [[ $order = 'mount' ]]
 then
 	mkdir -p ~/OSUengr
@@ -74,6 +80,8 @@ if [[ $order = 'work' ]]
 then
 	slack -s & disown
 	xdg-open https://osu.workforcehosting.com/workforce/WebClock.do
+	thunderbird & disown
+	terminator -l 'General_Work'
 	#hexchat & disown
 fi
 
