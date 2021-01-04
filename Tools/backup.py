@@ -4,7 +4,7 @@
 # get the excluded and included file paths (exclude, include, exclude-words, include-words) #TODO exclude words and include should come first
 # combine into command
 # run only if not dryrun
-
+import sys
 from getConfig import get_value, load_configs
 
 load_configs()
@@ -16,8 +16,7 @@ include_paths = get_value("backup.include", [])
 exclude_words = get_value("backup.exclude-words", [])
 include_words = get_value("backup.include-words", [])
 
-# TODO handle destination with more options
-destination = get_value("backup.destination.default")
+destination = get_value("backup.destination." + sys.argv[1])
 
 #now start building the command
 command = baseCommand + " \\\n"

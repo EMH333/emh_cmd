@@ -92,6 +92,26 @@ then
 	#pkill hexchat --signal SIGTERM
 fi
 
+if [[ $order = 'backup' ]]
+then
+	location=`python3 $emhDir/Tools/getConfig.py "backup.destination.$2"`
+	if [ $? -eq 0 ]
+	then
+		backupScript=`python3 $emhDir/Tools/backup.py $2`
+		echo "$backupScript"
+		read -r -p "Are you sure? [y/N] " response
+		if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]
+		then
+			echo "Running backup..."
+			eval "$backupScript"
+		else
+			echo "Okay, exiting"
+		fi
+	else
+		echo "Couldn't find a config for that backup location ($2)"
+	fi
+fi
+
 
 #aliases should always be last in this file
 #TODO only run if another command didn't already
