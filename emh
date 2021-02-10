@@ -81,7 +81,7 @@ then
 	slack -s & disown
 	xdg-open https://osu.workforcehosting.com/workforce/WebClock.do
 	thunderbird & disown
-	terminator -l 'General_Work'
+	#terminator -l 'General_Work' #Not working for some reason and causing problems
 	#hexchat & disown
 fi
 
@@ -112,6 +112,16 @@ then
 	fi
 fi
 
+if [[ $order = 'journal' ]]
+then
+	if [[ $2 = 'view' ]]
+	then
+		jrnl -to today | less +G -R
+	else
+		echo "Adding journal entry"
+		jrnl
+	fi
+fi
 
 #aliases should always be last in this file
 #TODO only run if another command didn't already
