@@ -1,12 +1,12 @@
 #!/bin/bash
 
 order=$1
-emhDir=`dirname "$(readlink -f "$0")"`
+emhDir=$(dirname "$(readlink -f "$0")")
 
 if [[ $order = 'start' ]] 
 then
 	echo "Optimizing system:"
-	sudo $emhDir/Tools/enableKeyboardAndMouse.perl
+	sudo "$emhDir"/Tools/enableKeyboardAndMouse.perl
 	emh bright
 	echo deep | sudo tee /sys/power/mem_sleep #enable deep sleep for suspend
 fi
@@ -15,7 +15,7 @@ if [[ $order = 'update' ]]
 then
 	echo "Updating System, please enter sudo password:"
 	sudo apt update
-	if [ $(apt-get -s upgrade | awk '/^Inst/ { print $2 }' | wc -l) -gt 0 ]
+	if [ "$(apt-get -s upgrade | awk '/^Inst/ { print $2 }' | wc -l)" -gt 0 ]
 	then
 		sudo apt upgrade
 	fi
@@ -24,25 +24,25 @@ fi
 if [[ $order = 'run' ]]
 then
 	echo "Running config"
-	python3  $emhDir/Tools/runProject.py ${@:2}
+	python3  "$emhDir"/Tools/runProject.py ${@:2}
 fi
 
 if [[ $order = 'crawl' ]]
 then
 	echo "Crawling Website"
-	$emhDir/Tools/webCrawl.sh ${@:2} #crawls website with input of 'emh crawl {URL} {Directory to store data}'
+	"$emhDir"/Tools/webCrawl.sh ${@:2} #crawls website with input of 'emh crawl {URL} {Directory to store data}'
 fi
 
 if [[ $order = 'bright' ]]
 then
-	defaultBrightness=`python3  $emhDir/Tools/getConfig.py "defaultBrightness" 0.3`
+	defaultBrightness=$(python3  "$emhDir"/Tools/getConfig.py "defaultBrightness" 0.3)
 
 	echo "Changing Brightness"
 	if [ $# -gt 1 ]
 	then
 		xrandr --output eDP-1 --brightness ${@:2} #TODO grab laptop screen name regardless of nvidia or intel graphics
 	else
-		xrandr --output eDP-1 --brightness $defaultBrightness
+		xrandr --output eDP-1 --brightness "$defaultBrightness"
 	fi
 fi
 
@@ -67,10 +67,10 @@ fi
 if [[ $order = 'connect' ]]
 then
 	#TODO move get config to function
-	location=`python3  $emhDir/Tools/getConfig.py "connect.$2"`
+	location=$(python3  "$emhDir"/Tools/getConfig.py "connect.$2")
 	if [ $? -eq 0 ]
 	then
-		ssh $location ${@:3}
+		ssh "$location" ${@:3}
 	else
 		echo "Couldn't find a config location for that server ($2)"
 	fi
@@ -94,10 +94,10 @@ fi
 
 if [[ $order = 'backup' ]]
 then
-	location=`python3 $emhDir/Tools/getConfig.py "backup.destination.$2"`
+	location=$(python3 "$emhDir"/Tools/getConfig.py "backup.destination.$2")
 	if [ $? -eq 0 ]
 	then
-		backupScript=`python3 $emhDir/Tools/backup.py $2`
+		backupScript=$(python3 "$emhDir"/Tools/backup.py "$2")
 		echo "$backupScript"
 		read -r -p "Are you sure? [y/N] " response
 		if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]
@@ -125,8 +125,8 @@ fi
 
 #aliases should always be last in this file
 #TODO only run if another command didn't already
-alias=`python3  $emhDir/Tools/getConfig.py "aliases.$order"`
+alias=$(python3  "$emhDir"/Tools/getConfig.py "aliases.$order")
 if [ $? -eq 0 ]
 then
-	emh $alias ${@:2}
+	emh "$alias" ${@:2}
 fi
