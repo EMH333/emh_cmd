@@ -24,13 +24,13 @@ fi
 if [[ $order = 'run' ]]
 then
 	echo "Running config"
-	python3  "$emhDir"/Tools/runProject.py ${@:2}
+	python3  "$emhDir"/Tools/runProject.py "${@:2}"
 fi
 
 if [[ $order = 'crawl' ]]
 then
 	echo "Crawling Website"
-	"$emhDir"/Tools/webCrawl.sh ${@:2} #crawls website with input of 'emh crawl {URL} {Directory to store data}'
+	"$emhDir"/Tools/webCrawl.sh "${@:2}" #crawls website with input of 'emh crawl {URL} {Directory to store data}'
 fi
 
 if [[ $order = 'bright' ]]
@@ -40,7 +40,7 @@ then
 	echo "Changing Brightness"
 	if [ $# -gt 1 ]
 	then
-		xrandr --output eDP-1 --brightness ${@:2} #TODO grab laptop screen name regardless of nvidia or intel graphics
+		xrandr --output eDP-1 --brightness "${@:2}" #TODO grab laptop screen name regardless of nvidia or intel graphics
 	else
 		xrandr --output eDP-1 --brightness "$defaultBrightness"
 	fi
@@ -123,10 +123,15 @@ then
 	fi
 fi
 
+if [[ $order = 'unused' ]]
+then
+	python3  "$emhDir"/Tools/unused/unused.py "$(pwd)" "${@:2}"
+fi
+
 #aliases should always be last in this file
 #TODO only run if another command didn't already
 alias=$(python3  "$emhDir"/Tools/getConfig.py "aliases.$order")
 if [ $? -eq 0 ]
 then
-	emh "$alias" ${@:2}
+	emh "$alias" "${@:2}"
 fi
