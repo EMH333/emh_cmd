@@ -8,6 +8,7 @@ then
 	echo "Optimizing system:"
 	sudo "$emhDir"/Tools/enableKeyboardAndMouse.perl
 	emh bright
+	( sleep 60 ; emh bright ) & # reset brightness again after 60 seconds
 	echo deep | sudo tee /sys/power/mem_sleep #enable deep sleep for suspend
 fi
 
@@ -19,6 +20,9 @@ then
 	then
 		sudo apt upgrade
 	fi
+	
+	# also update flatpak packages
+	flatpak update
 fi
 
 if [[ $order = 'run' ]]
