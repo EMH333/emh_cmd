@@ -15,7 +15,7 @@ while (my $f = readdir(D)) {#loop through all USB devices
 			open(my $yourhandle, '<', $path)
     			or die "Unable to open file, $!";
     		while (<$yourhandle>) { # Read the file line per line
-			   if ($_ =~ /.*(Mouse|Keyboard|Receiver).*/){#test to see if mouse, keyboard or some sort of reciver
+			   if ($_ =~ /.*(Mouse|Keyboard|Receiver|LAN).*/){#test to see if mouse, keyboard, some sort of reciver, or internet
 					my $filename = "$root/$f/power/control";#turn off optimizations
 					open(my $fh, '>', $filename) or die "Could not open file '$filename' $!";
 					print $fh "on";
