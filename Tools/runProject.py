@@ -1,11 +1,31 @@
 #!/usr/bin/env python3
-import os, sys, json, subprocess, signal
 
-types = dict(python="python3 $file",
-             golang="go run $file",
-             java="javac $file && java ${file%.*}",
-             node="node $file",
-             nodemon="nodemon $file")
+import json
+import os
+import signal
+import subprocess
+import sys
+
+commands = dict()
+
+
+def extract_from_commands_object(commands_object):
+    types = dict()
+    for command in commands_object:  # loop through all programs in home commands
+        if "names" in commands_object[command] and isinstance(commands_object[command]["names"],
+                                                              list):  # if name is an array, add all aliases to commands
+            for name in commands_object[command]["names"]:
+                types[name] = commands_object[command]["command"]
+        else:
+            if "name" in commands_object[command]:  # if program wants to go by different name then definition
+                types[commands_object[command]["name"]] = commands_object[command]["command"]
+            else:  # just grab name of command
+                # grab from command val if defined, else just value of the name val
+                if "command" in commands_object[command]:
+                    types[command] = commands_object[command]["command"]
+                else:
+                    types[command] = commands_object[command]
+    return types
 
 
 # loads commands in array from the home emh.json
@@ -16,20 +36,10 @@ def load_home_commands():
     programs_loaded = 0
     try:
         with open(home) as f:
-            prgms = json.load(f)["commands"]
-            for command in prgms:  # loop through all programs in home commands
-                if "names" in prgms[command] and isinstance(prgms[command]["names"], list):  # if name is an array, add all aliases to commands
-                    for name in prgms[command]["names"]:
-                        types[name] = prgms[command]["command"]
-                else:
-                    if "name" in prgms[command]: #if program wants to go by different name then definition
-                        types[prgms[command]["name"]] = prgms[command]["command"]
-                    else: #just grab name of command
-                        if "command" in prgms[command]: #grab from command val if defined, else just value of the name val
-                            types[command] = prgms[command]["command"]
-                        else:
-                            types[command] = prgms[command]
-                programs_loaded += 1
+            programs = json.load(f)["commands"]
+            new_commands = extract_from_commands_object(programs)
+            commands.update(new_commands)
+            programs_loaded = len(new_commands)
     except json.decoder.JSONDecodeError:
         print("There was an error decoding the JSON file")
 
@@ -37,22 +47,9 @@ def load_home_commands():
         print("Loaded " + str(programs_loaded) + " programs from home")
 
 
-def run():
-    signal.signal(signal.SIGINT, lambda x, y: sys.exit(0))  # remove traceback when exiting
-
+# TODO eventually include npm scripts
+def load_current_dir_commands():
     file = "./emh.json"
-    if not os.path.isfile("./emh.json"):
-        print("emh.json not found in local directory")
-
-    # if there is a command that is being asked to run, and it exists in emh.json files, run it
-    load_home_commands()
-    if len(sys.argv) > 1 and sys.argv[1] in types:
-        print("Using Command")
-        if len(sys.argv) > 2:
-            os.environ["file"] = sys.argv[2]  # export file variable for use if needed as second argument
-        subprocess.run(["bash", "-c", types[sys.argv[1]]])
-        return
-
     if os.path.isfile(file):
         print("Found file")
         try:
@@ -61,27 +58,41 @@ def run():
                 directory = os.path.dirname(f.name)
                 os.chdir(directory)  # change to that directory
 
-                # TODO let per dir emh.json also be an array or a plain object. if array, should have command named "default" or
-                # TODO an unnamed command that will be run when emh run is called without arguments
-                if "type" in data and "file" in data:
-                    # look up command to run and run it on file
-                    if data["type"] in types:
-                        custom_env = os.environ.copy()
-                        os.environ["file"] = data["file"]  # make sure the program knows what file to run
-                        subprocess.run(["bash", "-c", types[data["type"]]])  # run command with a type and file
-                        return
-                    else:
-                        print("Sorry, don't know how to run that type of program")
-
-                if "command" in data:
-                    subprocess.run(["bash", "-c", data["command"]])  # run command in config
-                    return
-
+                # load and add to list of commands
+                if "commands" in data:
+                    new_commands = extract_from_commands_object(data["commands"])
+                    commands.update(new_commands)
         except json.decoder.JSONDecodeError:
             print("There was an error decoding the JSON file")
-    else:
-        print("File not found:")
-        print(file)
+    return False
 
 
-run()
+def run(args):
+    signal.signal(signal.SIGINT, lambda x, y: sys.exit(0))  # remove traceback when exiting
+
+    have_command_to_run: bool = len(args) > 1
+
+    load_home_commands()
+    load_current_dir_commands()
+
+    # if a valid command then run it
+    if have_command_to_run and sys.argv[1] in commands:
+        print("Using Command")
+        if len(sys.argv) > 2:
+            os.environ["file"] = sys.argv[2]  # export file variable for use if needed as second argument
+        subprocess.run(["bash", "-c", commands[sys.argv[1]]])
+        return
+
+    if have_command_to_run and not sys.argv[1] in commands:
+        print("Invalid command")
+        have_command_to_run = False
+
+    # if no commands to run then then print
+    if not have_command_to_run and len(commands) > 0:
+        print("Commands:")
+        for key, value in commands.items():
+            print(key)
+
+
+if __name__ == '__main__':
+    run(sys.argv)
