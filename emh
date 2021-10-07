@@ -39,21 +39,21 @@ fi
 
 if [[ $order = 'bright' ]]
 then
-	defaultBrightness=$(python3  "$emhDir"/Tools/getConfig.py "defaultBrightness" 0.3)
+	defaultBrightness=$(python3  "$emhDir"/Tools/getConfig.py "defaultBrightness" 0.2)
 
 	echo "Changing Brightness"
 	if [ $# -gt 1 ]
 	then
-		xrandr --output eDP-1 --brightness "${@:2}" #TODO grab laptop screen name regardless of nvidia or intel graphics
+		brightness=$2
 	else
-		xrandr --output eDP-1 --brightness "$defaultBrightness"
+		brightness=$defaultBrightness
 	fi
-fi
+	brightness=$(awk -v bright="${brightness}" -v hundred="100" 'BEGIN{out_bright=(bright*hundred); print out_bright}')
 
-if [[ $order = 'gb' ]]
-then
-	echo "Changing Brightness"
-	xrandr --output eDP-1-1 --brightness 0.3
+	# set brightness property of org.gnome.SettingsDaemon.Power.Screen to requested brightness, normal output is sent to /dev/null
+	gdbus call --session --dest org.gnome.SettingsDaemon.Power --object-path /org/gnome/SettingsDaemon/Power \
+		--method org.freedesktop.DBus.Properties.Set \
+		org.gnome.SettingsDaemon.Power.Screen Brightness "<$brightness>" > /dev/null
 fi
 
 if [[ $order = 'mount' ]]
