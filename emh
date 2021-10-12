@@ -8,7 +8,6 @@ then
 	echo "Optimizing system:"
 	sudo "$emhDir"/Tools/disablePowerOptimizations.perl
 	emh bright
-	( sleep 60 ; emh bright ) & # reset brightness again after 60 seconds
 	echo deep | sudo tee /sys/power/mem_sleep #enable deep sleep for suspend
 fi
 
