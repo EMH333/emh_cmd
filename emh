@@ -9,6 +9,8 @@ then
 	sudo "$emhDir"/Tools/disablePowerOptimizations.perl
 	emh bright
 	echo deep | sudo tee /sys/power/mem_sleep #enable deep sleep for suspend
+	echo balance_power | sudo tee /sys/devices/system/cpu/cpufreq/policy*/energy_performance_preference # set preference for cpu performance
+	# TODO Add daemon that watches for unlocks to reset birightness https://unix.stackexchange.com/a/28183/151284
 fi
 
 if [[ $order = 'update' ]] 
