@@ -11,6 +11,14 @@ then
 	echo deep | sudo tee /sys/power/mem_sleep #enable deep sleep for suspend
 	echo balance_power | sudo tee /sys/devices/system/cpu/cpufreq/policy*/energy_performance_preference # set preference for cpu performance
 	# TODO Add daemon that watches for unlocks to reset birightness https://unix.stackexchange.com/a/28183/151284
+	# TODO Add to transient daemon using https://unix.stackexchange.com/a/367237/151284
+	dbus-monitor --session "type='signal',interface='org.gnome.ScreenSaver'" |
+	while read -r x; do
+		case "$x" in 
+		*"boolean true"*) echo SCREEN_LOCKED;;
+		*"boolean false"*) echo SCREEN_UNLOCKED && gdbus call --session --dest org.gnome.SettingsDaemon.Power --object-path /org/gnome/SettingsDaemon/Power --method org.gnome.SettingsDaemon.Power.Screen.StepUp && gdbus call --session --dest org.gnome.SettingsDaemon.Power --object-path /org/gnome/SettingsDaemon/Power --method org.gnome.SettingsDaemon.Power.Screen.StepDown;;  
+		esac
+	done
 fi
 
 if [[ $order = 'update' ]] 
@@ -84,7 +92,7 @@ fi
 if [[ $order = 'work' ]]
 then
 	slack -s & disown
-	xdg-open https://osu.workforcehosting.com/workforce/WebClock.do
+	xdg-open https://osu-prod.wta-us8.wfs.cloud/workforce/WebClock.do
 	thunderbird & disown
 	#terminator -l 'General_Work' #Not working for some reason and causing problems
 	#hexchat & disown
@@ -92,7 +100,7 @@ fi
 
 if [[ $order = 'unwork' ]]
 then
-	xdg-open https://osu.workforcehosting.com/workforce/WebClock.do
+	xdg-open https://osu-prod.wta-us8.wfs.cloud/workforce/WebClock.do
 	pkill slack --signal SIGTERM
 	#pkill hexchat --signal SIGTERM
 fi
