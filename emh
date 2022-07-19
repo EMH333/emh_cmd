@@ -43,7 +43,8 @@ fi
 if [[ $order = 'crawl' ]]
 then
 	echo "Crawling Website"
-	"$emhDir"/Tools/webCrawl.sh "${@:2}" #crawls website with input of 'emh crawl {URL} {Directory to store data}'
+	test=$(python3 "$emhDir"/Tools/crawl.py "$2")
+	echo $test
 fi
 
 if [[ $order = 'bright' ]]
